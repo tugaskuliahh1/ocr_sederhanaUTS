@@ -2,15 +2,27 @@
 
 A new Flutter project.
 
-## Getting Started
+# Laporan UTS implementasi OCR_SEDERHANA
+**Nama:** Ismi Atika  
+**NIM:** 2341760036  
+**Kelas:** SIB3C  
 
-This project is a starting point for a Flutter application.
+---
 
-A few resources to get you started if this is your first Flutter project:
+## Hasil UTS
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Berikut adalah hasil akhir dari UTS yang telah saya kerjakan dan klik mulai scan
+![Hasil](image/Hasil_1.png)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+setelah klik mulai scan tampilan akan muncul kamera untuk melakukan scan
+![Hasil](image/Hasil_2.png)
+
+Hasil akhir tulisan yang di scan akan terdeteksi
+![Hasil](image/Hasil_3.png)
+
+Selanjutnya bisa mendengarkan hasil suara dari teks yang terdeteksi melalui video berikut: 
+<video src="image/video.mp4" width="500" controls>
+     Browser kamu tidak mendukung pemutaran video.
+   </video>
+
+Dengan hasil tersebut, aplikasi berhasil menjalankan dua fungsi utama, yaitu *Optical Character Recognition (OCR)* untuk mengenali teks dari gambar dan *Text-to-Speech (TTS)* untuk mengubah teks hasil deteksi menjadi suara.Secara keseluruhan, aplikasi OCR sederhana ini dibangun menggunakan Flutter. Aplikasi ini memiliki kemampuan untuk mengambil gambar melalui kamera, mengenali teks secara otomatis menggunakan OCR, menampilkan hasil deteksi di layar, dan mengubah teks tersebut menjadi suara agar pengguna dapat mendengarkannya dengan mudah.  
