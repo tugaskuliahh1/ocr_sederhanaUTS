@@ -2,8 +2,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:ocr_sederhana_uts/screens/result_screen.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class ScanScreen extends StatefulWidget {
   const ScanScreen({super.key});
@@ -19,7 +19,27 @@ class _ScanScreenState extends State<ScanScreen> {
   @override
   void initState() {
     super.initState();
-    _initializeControllerFuture = _initCamera();
+    _checkPermissionAndInit();
+  }
+
+  /// Cek & minta izin kamera sebelum inisialisasi
+  Future<void> _checkPermissionAndInit() async {
+    var status = await Permission.camera.status;
+    if (!status.isGranted) {
+      await Permission.camera.request();
+    }
+
+    // Pastikan user sudah kasih izin
+    if (await Permission.camera.isGranted) {
+      _initializeControllerFuture = _initCamera();
+      setState(() {}); // refresh UI
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Izin kamera dibutuhkan untuk menggunakan fitur ini."),
+        ),
+      );
+    }
   }
 
   Future<void> _initCamera() async {
@@ -66,13 +86,17 @@ class _ScanScreenState extends State<ScanScreen> {
       await _initializeControllerFuture;
 
       if (_controller == null || !_controller!.value.isInitialized) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text("Kamera belum siap.")));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Kamera belum siap, tunggu sebentar..."),
+          ),
+        );
         return;
       }
 
       final XFile image = await _controller!.takePicture();
+      debugPrint("📸 Foto disimpan di: ${image.path}");
+
       final ocrText = await _ocrFromFile(File(image.path));
 
       if (!mounted) return;
@@ -82,10 +106,11 @@ class _ScanScreenState extends State<ScanScreen> {
         MaterialPageRoute(builder: (_) => ResultScreen(ocrText: ocrText)),
       );
     } catch (e) {
+      debugPrint("Error saat scan: $e");
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
-            "Pemindaian Gagal! Periksa Izin Kamera atau coba lagi.",
+            "Pemindaian Gagal! Periksa izin kamera atau coba lagi.",
           ),
         ),
       );
@@ -97,10 +122,19 @@ class _ScanScreenState extends State<ScanScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('Kamera OCR')),
       body: FutureBuilder<void>(
-        future: _initializeControllerFuture,
+        future: _controller == null ? null : _initializeControllerFuture,
         builder: (context, snapshot) {
+          if (_controller == null) {
+            // belum inisialisasi
+            return const Center(
+              child: Text(
+                "Menunggu izin kamera...",
+                style: TextStyle(fontSize: 16),
+              ),
+            );
+          }
+
           if (snapshot.connectionState == ConnectionState.waiting) {
-            // Custom Loading Screen
             return Scaffold(
               backgroundColor: Colors.grey[900],
               body: const Center(
@@ -117,9 +151,7 @@ class _ScanScreenState extends State<ScanScreen> {
                 ),
               ),
             );
-          } else if (_controller == null ||
-              !_controller!.value.isInitialized ||
-              snapshot.hasError) {
+          } else if (!_controller!.value.isInitialized || snapshot.hasError) {
             return const Center(
               child: Text(
                 "Gagal menginisialisasi kamera",
@@ -137,10 +169,10 @@ class _ScanScreenState extends State<ScanScreen> {
                 ),
                 Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: ElevatedButton.icon(
+                  child: FloatingActionButton(
                     onPressed: _takePicture,
-                    icon: const Icon(Icons.camera_alt),
-                    label: const Text('Ambil Foto & Scan'),
+                    backgroundColor: Colors.deepPurple,
+                    child: const Icon(Icons.camera_alt),
                   ),
                 ),
               ],
