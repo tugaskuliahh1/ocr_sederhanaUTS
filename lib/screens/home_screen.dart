@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ocr_sederhana/screens/scan_screen.dart';
+import 'scan_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -16,7 +16,14 @@ class HomeScreen extends StatelessWidget {
               MaterialPageRoute(builder: (_) => const ScanScreen()),
             );
           },
-          child: const Text('Mulai Scan Teks'),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.deepPurple,
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          ),
+          child: const Text(
+            'Mulai Scan Teks',
+            style: TextStyle(color: Colors.white),
+          ),
         ),
       ),
     );
